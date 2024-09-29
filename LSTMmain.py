@@ -1,5 +1,6 @@
 import argparse 
 import torch
+import pyttsx3
 from LSTMmodel import CharLSTM
 from LSTMtrain import train
 from LSTMpredict import predict
@@ -37,5 +38,17 @@ def main():
         # print(f"Input: {args.input_seq}")
         print(result)
 
-if __name__ == "__main__":  # Fixing the typo here
+        engine = pyttsx3.init()
+        engine.setProperty('rate', 150)
+        engine.setProperty('volume', 1)
+        if result == "MHACKS":
+            result = "EMHACKS"
+        if result == "HELLO WORL":
+            result = "HELLO WORLD"
+        if result == "GO BLU":
+            result = "GO BLUE"
+        engine.say(result)
+        engine.runAndWait()
+
+if __name__ == "__main__":
     main()
