@@ -29,13 +29,13 @@ hidden_dim = 256
 
 # Create the model instance and load the saved weights
 model = CharLSTM(vocab_size, embedding_dim, hidden_dim)  # Initialize the model
-model.load_state_dict(torch.load("char_level_model.pth"))  # Load the saved state_dict
+model.load_state_dict(torch.load("char_level_model.pth", weights_only=True))  # Load the saved state_dict
 model.eval()  # Set the model to evaluation mode
 
 # Define your test input
 test_input = "GOBLUE"
 predicted_output = predict(model, test_input, char_to_idx, idx_to_char)  # Call the predict function
 
-# Print the results
-print(f"Input: {test_input}")
-print(f"Predicted Output: {predicted_output}")
+# # Print the results
+# print(f"Input: {test_input}")
+# print(f"Predicted Output: {predicted_output}")
