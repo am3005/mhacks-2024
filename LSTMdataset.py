@@ -251,7 +251,7 @@ data = [
 vocab = set("ABCDEFGHIJKLMNOPQRSTUVWXYZ '")
 char_to_idx = {char: idx for idx, char in enumerate(sorted(vocab))}
 idx_to_char = {idx: char for char, idx in char_to_idx.items()}
-print(f"Vocabulary size: {len(char_to_idx)}")
+#print(f"Vocabulary size: {len(char_to_idx)}")
 
 def encode_sequence(sequence, char_to_idx):
     encoded = []
@@ -294,4 +294,4 @@ if __name__ == "__main__":
     inputs, outputs = get_dataset()
     print(f"Sample encoded input: {inputs[0]}")
     print(f"Sample encoded output: {outputs[0]}")
-    print(f"Vocabulary: {char_to_idx}")
+   # print(f"Vocabulary: {char_to_idx}")

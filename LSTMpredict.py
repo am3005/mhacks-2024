@@ -36,6 +36,6 @@ model.eval()  # Set the model to evaluation mode
 test_input = "GOBLUE"
 predicted_output = predict(model, test_input, char_to_idx, idx_to_char)  # Call the predict function
 
-# Print the results
-print(f"Input: {test_input}")
-print(f"Predicted Output: {predicted_output}")
+# # Print the results
+# print(f"Input: {test_input}")
+# print(f"Predicted Output: {predicted_output}")

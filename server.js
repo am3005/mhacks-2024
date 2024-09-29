@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
+import { spawn } from 'child_process';  // Import child_process to run the Python script
 
 // Manually define __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -32,6 +33,8 @@ app.post('/upload', async (req, res) => {
     }
 
     results = []; // Clear previous results
+    let uniqueClasses = []; // To store class names for prediction
+
     for (const [index, image] of images.entries()) {
         const base64Data = image.replace(/^data:image\/png;base64,/, '');
         const filePath = path.join(uploadDir, `image_${index}.png`);
@@ -52,15 +55,51 @@ app.post('/upload', async (req, res) => {
                 }
             });
 
-            results.push(response.data);
+            const apiResult = response.data;
+            results.push(apiResult);
+
+            // Extract classes and add to uniqueClasses array
+            const predictions = apiResult.predictions || [];
+            predictions.forEach(prediction => {
+                if (prediction.class) {
+                    uniqueClasses.push(prediction.class.trim()); // Add class to the array, including duplicates
+                }
+            });
+
         } catch (error) {
             console.error('Error processing image:', error.message);
             results.push({ error: 'Error processing image' });
         }
     }
 
-    // Return success response and provide a link to get results
-    res.json({ message: 'Images processed successfully', results: results.length });
+    // Combine unique classes into a single string without separators
+    const combinedClassString = uniqueClasses.join('').toUpperCase(); // Join without spaces or commas
+
+    // Call the Python script for prediction using the combined class string
+    const pythonProcess = spawn('/Users/thainguyen/anaconda3/bin/python', ['LSTMmain.py', '--mode', 'predict', '--input_seq', combinedClassString]);
+
+    let pythonResult = '';
+
+    // Capture the output from the Python script
+    pythonProcess.stdout.on('data', (data) => {
+        pythonResult += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        console.error(`Python Error: ${data.toString()}`);
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0) {
+            console.error(`Python script exited with code ${code}`);
+            results.push({ error: `Python script failed with exit code ${code}` });
+        } else {
+            results.push({ prediction: pythonResult.trim() }); // Trim the result for cleaner output
+        }
+
+        // Return success response and provide a link to get results
+        res.json({ message: 'Images processed successfully', results: results.length });
+    });
 });
 
 // New endpoint to get results in JSON format
@@ -69,6 +108,39 @@ app.get('/get-results', (req, res) => {
         return res.status(404).json({ error: 'No results available' });
     }
     res.json(results);
+});
+
+// New endpoint to run prediction using combined classes
+app.post('/run-predict', (req, res) => {
+    const inputSeq = req.body.input_seq.toUpperCase();
+
+    if (!inputSeq) {
+        return res.status(400).json({ error: 'No input sequence provided' });
+    }
+
+    // Call the Python script for prediction using the input sequence
+    const pythonProcess = spawn('/Users/thainguyen/anaconda3/bin/python', ['LSTMmain.py', '--mode', 'predict', '--input_seq', inputSeq]);
+
+    let pythonResult = '';
+
+    // Capture the output from the Python script
+    pythonProcess.stdout.on('data', (data) => {
+        pythonResult += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        console.error(`Python Error: ${data.toString()}`);
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0) {
+            console.error(`Python script exited with code ${code}`);
+            return res.status(500).json({ error: `Python script failed with exit code ${code}` });
+        }
+        
+        // Return the predicted output
+        res.json({ predicted_output: pythonResult.trim() }); // Trim the result for cleaner output
+    });
 });
 
 // Serve the results HTML file

@@ -7,8 +7,10 @@
 <body>
     <div class="contentarea">
         <div id="results"></div>
-        <button onclick="window.location.href='json-results.html'">View JSON Data</button> <!-- Button to view JSON -->
+        <button onclick="window.location.href='json-results.html'">View JSON Data</button>
         <button id="backButton">Home</button>
+        <button id="predictButton">Run Prediction</button> <!-- New button to trigger the prediction -->
+
         <script>
             // Fetch results from the server
             fetch('/get-results') // Endpoint to retrieve results
@@ -20,7 +22,7 @@
                 })
                 .then(results => {
                     const resultsDiv = document.getElementById('results');
-                    const uniqueClasses = new Set(); // Store unique class names
+                    let uniqueClasses = []; // Store class names in an array, allowing duplicates
 
                     if (results && Array.isArray(results)) {
                         results.forEach((result, index) => {
@@ -31,16 +33,42 @@
 
                             predictions.forEach(prediction => {
                                 if (prediction.class) {
-                                    uniqueClasses.add(prediction.class.trim()); // Add class to the set for uniqueness
+                                    const trimmedClass = prediction.class.trim();
+                                    uniqueClasses.push(trimmedClass); // Add class to the array, including duplicates
                                 }
                             });
                         });
 
-                        // Convert the set back to an array and join without spaces or commas
-                        const combinedClassString = Array.from(uniqueClasses).join('') || 'No classes detected.';
+                        // Join the array without any separator
+                        const combinedClassString = uniqueClasses.join('') || 'No classes detected.';
 
                         // Display the combined class string at the end
-                        resultsDiv.innerHTML += `<h1>Combined Results: ${combinedClassString}</h1>`; // Append at the end of the results
+                        resultsDiv.innerHTML += `<h1>Combined Results: ${combinedClassString}</h1>`;
+
+                        // Event listener for the prediction button
+                        document.getElementById('predictButton').addEventListener('click', function() {
+                            fetch('/run-predict', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ input_seq: combinedClassString }) // Send the combinedClassString as input
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Failed to get prediction');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                // Display the prediction in the resultsDiv
+                                resultsDiv.innerHTML += `<h1>Predicted Output: ${data.predicted_output}</h1>`; // Display the prediction
+                            })
+                            .catch(error => {
+                                console.error('Error during prediction:', error);
+                                resultsDiv.innerHTML += '<p>Error retrieving prediction.</p>'; // Handle error case
+                            });
+                        });
                     } else {
                         resultsDiv.innerHTML = '<p>No results available.</p>';
                     }
@@ -50,9 +78,9 @@
                     document.getElementById('results').innerHTML = '<p>Error retrieving results.</p>';
                 });
 
-                document.getElementById('backButton').addEventListener('click', function() {
-                    window.location.href = '/'; // Adjust the URL if needed
-                });
+            document.getElementById('backButton').addEventListener('click', function() {
+                window.location.href = '/'; // Adjust the URL if needed
+            });
         </script>   
     </div> 
 </body>
