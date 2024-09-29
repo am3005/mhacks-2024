@@ -21,6 +21,7 @@ def main():
 
     if args.mode == 'train':
         train(model)  # Call the training function
+        torch.save(model.state_dict(), "char_level_model.pth")
     else:
         if args.input_seq is None:
             return  # Exit if no input sequence is provided
