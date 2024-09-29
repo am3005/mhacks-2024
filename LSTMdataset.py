@@ -295,4 +295,3 @@ if __name__ == "__main__":
     print(f"Sample encoded input: {inputs[0]}")
     print(f"Sample encoded output: {outputs[0]}")
    # print(f"Vocabulary: {char_to_idx}")
-
