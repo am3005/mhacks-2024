@@ -76,7 +76,7 @@ app.post('/upload', async (req, res) => {
     const combinedClassString = uniqueClasses.join('').toUpperCase(); // Join without spaces or commas
 
     // Call the Python script for prediction using the combined class string
-    const pythonProcess = spawn('/Users/thainguyen/anaconda3/bin/python', ['LSTMmain.py', '--mode', 'predict', '--input_seq', combinedClassString]);
+    const pythonProcess = spawn('C:\\Python312\\python.exe', ['LSTMmain.py', '--mode', 'predict', '--input_seq', combinedClassString]);
 
     let pythonResult = '';
 
@@ -119,7 +119,7 @@ app.post('/run-predict', (req, res) => {
     }
 
     // Call the Python script for prediction using the input sequence
-    const pythonProcess = spawn('/Users/thainguyen/anaconda3/bin/python', ['LSTMmain.py', '--mode', 'predict', '--input_seq', inputSeq]);
+    const pythonProcess = spawn('C:\\Python312\\python.exe', ['LSTMmain.py', '--mode', 'predict', '--input_seq', inputSeq]);
 
     let pythonResult = '';
 

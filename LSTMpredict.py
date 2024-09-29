@@ -29,7 +29,7 @@ hidden_dim = 256
 
 # Create the model instance and load the saved weights
 model = CharLSTM(vocab_size, embedding_dim, hidden_dim)  # Initialize the model
-model.load_state_dict(torch.load("char_level_model.pth", weights_only=True))  # Load the saved state_dict
+model.load_state_dict(torch.load("char_level_model.pth", map_location=torch.device('cpu')))  # Load the saved state_dict
 model.eval()  # Set the model to evaluation mode
 
 # Define your test input

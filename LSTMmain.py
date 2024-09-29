@@ -1,10 +1,12 @@
 import argparse 
 import torch
-import pyttsx3
 from LSTMmodel import CharLSTM
 from LSTMtrain import train
 from LSTMpredict import predict
 from LSTMdataset import char_to_idx, idx_to_char
+import requests
+
+url = "http://127.0.0.1:8000/speak/"
 
 def main():
     parser = argparse.ArgumentParser(description="Train or Test Character-Level LSTM")
@@ -39,17 +41,17 @@ def main():
         # print(f"Input: {args.input_seq}")
         print(result)
 
-        engine = pyttsx3.init()
-        engine.setProperty('rate', 150)
-        engine.setProperty('volume', 1)
-        if result == "MHACKS":
-            result = "EMHACKS"
-        if result == "HELLO WORL":
-            result = "HELLO WORLD"
-        if result == "GO BLU":
-            result = "GO BLUE"
-        engine.say(result)
-        engine.runAndWait()
+        try:
+            response = requests.post(url, json=result)
+
+            # Check if the request was successful
+            if response.status_code == 200:
+                print("Successfully called FastAPI:", response.json())
+            else:
+                print("Failed to call FastAPI:", response.status_code, response.text)
+
+        except requests.exceptions.RequestException as e:
+            print("Error calling the FastAPI application:", e)
 
 if __name__ == "__main__":
     main()
