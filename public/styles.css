@@ -1,0 +1,80 @@
+#video {
+    border: 2px solid black;
+    width: 100%; /* Set video to take full width of container */
+    max-width: 320px; /* Maximum width */
+    height: auto; /* Maintain aspect ratio */
+}
+
+#photo {
+    border: 2px solid black;
+    width: 100%; /* Set photo to take full width of container */
+    max-width: 320px; /* Maximum width */
+    height: auto; /* Maintain aspect ratio */
+}
+
+#canvas {
+    display: none;
+}
+
+.camera {
+    width: 100%; /* Set camera to full width */
+    max-width: 340px; /* Maximum width */
+    margin: 0 auto; /* Center the camera */
+}
+
+.output {
+    width: 100%; /* Set output to full width */
+    max-width: 340px; /* Maximum width */
+    padding-top: 20px;
+    margin: 0 auto; /* Center the output */
+}
+
+.button-container {
+    display: flex; /* Use flexbox for alignment */
+    justify-content: center; /* Center the buttons */
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+    gap: 10px; /* Space between buttons */
+    margin: 20px 0; /* Margin around button container */
+}
+
+button {
+    padding: 15px;
+    background-color: #8481da;
+    border: 1px solid rgba(0, 0, 0, 0.7);
+    font-size: 14px;
+    color: rgba(255, 255, 255, 1.0);
+    cursor: pointer;
+    flex: 1; /* Allows buttons to grow equally */
+    min-width: 120px; /* Minimum width for buttons */
+    max-width: 150px; /* Maximum width for buttons */
+    transition: transform 0.2s ease; /* Smooth transition for the hover effect */
+}
+
+/* Hover effect */
+button:hover {
+    transform: scale(1.05); /* Slightly increase the button size */
+}
+
+/* Additional styles for mobile responsiveness */
+@media (max-width: 480px) {
+    .button-container {
+        flex-direction: column; /* Stack buttons vertically on small screens */
+        align-items: center; /* Center buttons in column */
+    }
+
+    button {
+        width: 100%; /* Full width for buttons on small screens */
+        max-width: none; /* Remove max-width on small screens */
+    }
+
+    #video, #photo {
+        max-width: 100%; /* Allow video/photo to use full width */
+    }
+}
+
+.contentarea {
+    font-size: 16px;
+    font-family: Arial;
+    text-align: center;
+    padding: 10px; /* Padding around the content area */
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Results</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS -->
+</head>
+<body>
+    <div class="contentarea">
+        <h1>JSON Results</h1>
+        <pre id="jsonOutput"></pre> <!-- Preformatted text for JSON display -->
+        <button onclick="goBack()">Go Back</button> <!-- Button to return to results -->
+    </div>
+
+    <script>
+        // Fetch results from the server
+        fetch('/get-results') // Endpoint to retrieve results
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(results => {
+                // Display the JSON data in a preformatted text block
+                document.getElementById('jsonOutput').textContent = JSON.stringify(results, null, 2);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('jsonOutput').textContent = 'Error retrieving results.';
+            });
+
+        // Function to go back to the previous page
+        function goBack() {
+            window.history.back(); // Go back to the previous page
+        }
+    </script>
+</body>
+</html>

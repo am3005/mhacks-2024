@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS -->
+    <title>Results</title>
+</head>
+<body>
+    <div class="contentarea">
+        <div id="results"></div>
+        <button onclick="window.location.href='json-results.html'">View JSON Data</button> <!-- Button to view JSON -->
+        <button id="backButton">Home</button>
+        <script>
+            // Fetch results from the server
+            fetch('/get-results') // Endpoint to retrieve results
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(results => {
+                    const resultsDiv = document.getElementById('results');
+                    const uniqueClasses = new Set(); // Store unique class names
+
+                    if (results && Array.isArray(results)) {
+                        results.forEach((result, index) => {
+                            const predictions = result.predictions || []; // Handle case where predictions might be undefined
+
+                            // Log the entire JSON object for debugging
+                            console.log(`Image ${index + 1} JSON:`, result);
+
+                            predictions.forEach(prediction => {
+                                if (prediction.class) {
+                                    uniqueClasses.add(prediction.class.trim()); // Add class to the set for uniqueness
+                                }
+                            });
+                        });
+
+                        // Convert the set back to an array and join without spaces or commas
+                        const combinedClassString = Array.from(uniqueClasses).join('') || 'No classes detected.';
+
+                        // Display the combined class string at the end
+                        resultsDiv.innerHTML += `<h1>Combined Results: ${combinedClassString}</h1>`; // Append at the end of the results
+                    } else {
+                        resultsDiv.innerHTML = '<p>No results available.</p>';
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    document.getElementById('results').innerHTML = '<p>Error retrieving results.</p>';
+                });
+
+                document.getElementById('backButton').addEventListener('click', function() {
+                    window.location.href = '/'; // Adjust the URL if needed
+                });
+        </script>   
+    </div> 
+</body>
+</html>
